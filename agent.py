@@ -97,16 +97,12 @@ class GPTAgent:
                 assistant_message = response.choices[0].message.content
                 self.add_message("assistant", assistant_message)
                 return assistant_message
-            except (APIError, APIConnectionError, RateLimitError) as e:
-                # Handle specific OpenAI API errors
-                error_msg = f"OpenAI API error: {e}"
-                print(error_msg)
-                response_text = f"Agent received: {user_message} (API error)"
-                self.add_message("assistant", response_text)
-                return response_text
             except Exception as e:
-                # Handle any other unexpected errors
-                error_msg = f"Unexpected error: {e}"
+                # Handle OpenAI API errors (check specific types if available)
+                if APIError and isinstance(e, (APIError, APIConnectionError, RateLimitError)):
+                    error_msg = f"OpenAI API error: {e}"
+                else:
+                    error_msg = f"Unexpected error: {e}"
                 print(error_msg)
                 response_text = f"Agent received: {user_message} (error occurred)"
                 self.add_message("assistant", response_text)
