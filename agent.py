@@ -55,7 +55,7 @@ class GPTAgent:
                 "Warning: No OpenAI API key provided. The agent will not be able to call "
                 "the OpenAI API and any real GPT-based responses will not function.\n"
                 "Set the OPENAI_API_KEY environment variable or pass api_key to GPTAgent.\n"
-                "You can create an API key at: https://platform.openai.com/account/api-keys"
+                "You can create an API key at: https://platform.openai.com/api-keys"
             )
         elif OpenAI is None:
             print("Warning: OpenAI library not installed. Install with: pip install openai")
@@ -90,6 +90,10 @@ class GPTAgent:
                     model=self.model,
                     messages=self.conversation_history
                 )
+                # Validate response has choices and content
+                if not response.choices or not response.choices[0].message.content:
+                    raise ValueError("Empty response from OpenAI API")
+                
                 assistant_message = response.choices[0].message.content
                 self.add_message("assistant", assistant_message)
                 return assistant_message
