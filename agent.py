@@ -100,6 +100,9 @@ def main():
         except KeyboardInterrupt:
             print("\nGoodbye!")
             break
+        except EOFError:
+            print("\nGoodbye!")
+            break
         except Exception as e:
             print(f"Error: {e}")
 
