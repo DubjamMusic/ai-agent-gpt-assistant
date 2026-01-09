@@ -12,27 +12,63 @@ try:
 except ImportError:
     pass  # dotenv is optional
 
+try:
+    from openai import OpenAI, APIError, APIConnectionError, RateLimitError
+except ImportError:
+    OpenAI = None  # OpenAI library not installed
+    APIError = None
+    APIConnectionError = None
+    RateLimitError = None
+
 
 class GPTAgent:
     """A simple GPT agent that can interact with users and perform tasks."""
     
-    def __init__(self, model: str = "gpt-3.5-turbo", api_key: Optional[str] = None):
+    # Valid OpenAI chat message roles
+    VALID_ROLES = {"user", "assistant", "system"}
+    
+    def __init__(
+        self, 
+        model: str = "gpt-3.5-turbo", 
+        api_key: Optional[str] = None,
+        system_prompt: Optional[str] = None
+    ):
         """
         Initialize the GPT Agent.
         
         Args:
             model: The GPT model to use
             api_key: OpenAI API key (if not provided, will look for OPENAI_API_KEY env var)
+            system_prompt: Optional system prompt to configure agent behavior
         """
         self.model = model
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.conversation_history: List[Dict[str, str]] = []
+        self.client = None
+        
+        # Initialize conversation history with system prompt if provided
+        if system_prompt:
+            self.conversation_history.append({"role": "system", "content": system_prompt})
         
         if not self.api_key:
-            print("Warning: No API key provided. Set OPENAI_API_KEY environment variable.")
+            print(
+                "Warning: No OpenAI API key provided. The agent will not be able to call "
+                "the OpenAI API and any real GPT-based responses will not function.\n"
+                "Set the OPENAI_API_KEY environment variable or pass api_key to GPTAgent.\n"
+                "You can create an API key at: https://platform.openai.com/api-keys"
+            )
+        elif OpenAI is None:
+            print("Warning: OpenAI library not installed. Install with: pip install openai")
+        else:
+            self.client = OpenAI(api_key=self.api_key)
     
     def add_message(self, role: str, content: str):
         """Add a message to the conversation history."""
+        # Validate role parameter
+        if role not in self.VALID_ROLES:
+            raise ValueError(
+                f"Invalid role '{role}'. Must be one of: {', '.join(self.VALID_ROLES)}"
+            )
         self.conversation_history.append({"role": role, "content": content})
     
     def chat(self, user_message: str) -> str:
@@ -47,28 +83,45 @@ class GPTAgent:
         """
         self.add_message("user", user_message)
         
-        # TODO: Implement OpenAI API integration
-        # This is a placeholder implementation. To make this functional:
-        # 1. Import the openai library
-        # 2. Initialize the OpenAI client with the API key
-        # 3. Call the chat completion API with the conversation history
-        # Example:
-        #   from openai import OpenAI
-        #   client = OpenAI(api_key=self.api_key)
-        #   response = client.chat.completions.create(
-        #       model=self.model,
-        #       messages=self.conversation_history
-        #   )
-        #   return response.choices[0].message.content
-        
-        response = f"Agent received: {user_message}"
-        self.add_message("assistant", response)
-        
-        return response
+        # If OpenAI client is available, use it to get a real response
+        if self.client:
+            try:
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=self.conversation_history
+                )
+                # Validate response has choices and content
+                if not response.choices:
+                    raise ValueError("No choices in response from OpenAI API")
+                if response.choices[0].message.content is None:
+                    raise ValueError("Empty content in response from OpenAI API")
+                
+                assistant_message = response.choices[0].message.content
+                self.add_message("assistant", assistant_message)
+                return assistant_message
+            except Exception as e:
+                # Handle OpenAI API errors (check specific types if available)
+                if (APIError is not None and APIConnectionError is not None and 
+                    RateLimitError is not None and 
+                    isinstance(e, (APIError, APIConnectionError, RateLimitError))):
+                    error_msg = f"OpenAI API error: {e}"
+                else:
+                    error_msg = f"Unexpected error: {e}"
+                print(error_msg)
+                response_text = f"Agent received: {user_message} (error occurred)"
+                self.add_message("assistant", response_text)
+                return response_text
+        else:
+            # Fallback for when client is not initialized (no API key or library not installed)
+            response_text = f"Agent received: {user_message}"
+            self.add_message("assistant", response_text)
+            return response_text
     
     def reset(self):
-        """Reset the conversation history."""
-        self.conversation_history = []
+        """Reset the conversation history, preserving system prompts."""
+        # Keep system messages if they exist
+        system_messages = [msg for msg in self.conversation_history if msg["role"] == "system"]
+        self.conversation_history = system_messages
     
     def get_history(self) -> List[Dict[str, str]]:
         """Get the conversation history."""

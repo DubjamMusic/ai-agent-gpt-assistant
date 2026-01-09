@@ -4,10 +4,11 @@ A simple, extensible GPT-based agent implementation for interacting with OpenAI'
 
 ## Features
 
-- 🤖 Interactive chat interface
+- 🤖 Interactive chat interface with real OpenAI API integration
 - 💬 Conversation history management
 - 🔧 Configurable GPT model selection
 - 🔐 Secure API key management
+- 🎯 Customizable system prompts for agent behavior
 - 🐍 Pure Python implementation
 
 ## Installation
@@ -26,7 +27,8 @@ pip install -r requirements.txt
 3. Set up your OpenAI API key:
 ```bash
 cp .env.example .env
-# Edit .env and add your OpenAI API key
+# Open .env in a text editor and replace 'your_api_key_here' with your actual OpenAI API key
+# You can create and manage API keys at https://platform.openai.com/api-keys
 ```
 
 ## Usage
@@ -47,6 +49,12 @@ from agent import GPTAgent
 
 # Initialize the agent
 agent = GPTAgent(model="gpt-3.5-turbo")
+
+# Initialize with a custom system prompt
+agent_with_prompt = GPTAgent(
+    model="gpt-3.5-turbo",
+    system_prompt="You are a helpful assistant that speaks like a pirate."
+)
 
 # Chat with the agent
 response = agent.chat("Hello, how are you?")
@@ -96,4 +104,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Related Projects
 
-- [hustlecodex](https://github.com/DubjamMusic/hustlecodex) - HustleCodex V3 Reality Recovery Playing Game
+- [HustleCodex](https://github.com/DubjamMusic/hustlecodex) - HustleCodex V3 Reality Recovery Playing Game
