@@ -4,8 +4,13 @@ GPT Agent - A simple OpenAI GPT-based agent implementation
 """
 
 import os
-import sys
 from typing import List, Dict, Optional
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # dotenv is optional
 
 
 class GPTAgent:
@@ -42,7 +47,20 @@ class GPTAgent:
         """
         self.add_message("user", user_message)
         
-        # This is a placeholder - in a real implementation, you would call the OpenAI API
+        # TODO: Implement OpenAI API integration
+        # This is a placeholder implementation. To make this functional:
+        # 1. Import the openai library
+        # 2. Initialize the OpenAI client with the API key
+        # 3. Call the chat completion API with the conversation history
+        # Example:
+        #   from openai import OpenAI
+        #   client = OpenAI(api_key=self.api_key)
+        #   response = client.chat.completions.create(
+        #       model=self.model,
+        #       messages=self.conversation_history
+        #   )
+        #   return response.choices[0].message.content
+        
         response = f"Agent received: {user_message}"
         self.add_message("assistant", response)
         
