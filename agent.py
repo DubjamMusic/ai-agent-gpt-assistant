@@ -102,8 +102,10 @@ class GPTAgent:
             return response_text
     
     def reset(self):
-        """Reset the conversation history."""
-        self.conversation_history = []
+        """Reset the conversation history, preserving system prompts."""
+        # Keep system messages if they exist
+        system_messages = [msg for msg in self.conversation_history if msg["role"] == "system"]
+        self.conversation_history = system_messages
     
     def get_history(self) -> List[Dict[str, str]]:
         """Get the conversation history."""
