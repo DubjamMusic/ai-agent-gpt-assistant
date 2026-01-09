@@ -91,15 +91,19 @@ class GPTAgent:
                     messages=self.conversation_history
                 )
                 # Validate response has choices and content
-                if not response.choices or not response.choices[0].message.content:
-                    raise ValueError("Empty response from OpenAI API")
+                if not response.choices:
+                    raise ValueError("No choices in response from OpenAI API")
+                if response.choices[0].message.content is None:
+                    raise ValueError("Empty content in response from OpenAI API")
                 
                 assistant_message = response.choices[0].message.content
                 self.add_message("assistant", assistant_message)
                 return assistant_message
             except Exception as e:
                 # Handle OpenAI API errors (check specific types if available)
-                if APIError and isinstance(e, (APIError, APIConnectionError, RateLimitError)):
+                if (APIError is not None and APIConnectionError is not None and 
+                    RateLimitError is not None and 
+                    isinstance(e, (APIError, APIConnectionError, RateLimitError))):
                     error_msg = f"OpenAI API error: {e}"
                 else:
                     error_msg = f"Unexpected error: {e}"
