@@ -13,13 +13,19 @@ except ImportError:
     pass  # dotenv is optional
 
 try:
-    from openai import OpenAI
+    from openai import OpenAI, APIError, APIConnectionError, RateLimitError
 except ImportError:
     OpenAI = None  # OpenAI library not installed
+    APIError = None
+    APIConnectionError = None
+    RateLimitError = None
 
 
 class GPTAgent:
     """A simple GPT agent that can interact with users and perform tasks."""
+    
+    # Valid OpenAI chat message roles
+    VALID_ROLES = {"user", "assistant", "system"}
     
     def __init__(
         self, 
@@ -59,10 +65,9 @@ class GPTAgent:
     def add_message(self, role: str, content: str):
         """Add a message to the conversation history."""
         # Validate role parameter
-        valid_roles = {"user", "assistant", "system"}
-        if role not in valid_roles:
+        if role not in self.VALID_ROLES:
             raise ValueError(
-                f"Invalid role '{role}'. Must be one of: {', '.join(valid_roles)}"
+                f"Invalid role '{role}'. Must be one of: {', '.join(self.VALID_ROLES)}"
             )
         self.conversation_history.append({"role": role, "content": content})
     
@@ -88,11 +93,18 @@ class GPTAgent:
                 assistant_message = response.choices[0].message.content
                 self.add_message("assistant", assistant_message)
                 return assistant_message
-            except Exception as e:
-                # If API call fails, fall back to placeholder
-                error_msg = f"Error calling OpenAI API: {e}"
+            except (APIError, APIConnectionError, RateLimitError) as e:
+                # Handle specific OpenAI API errors
+                error_msg = f"OpenAI API error: {e}"
                 print(error_msg)
-                response_text = f"Agent received: {user_message} (API unavailable)"
+                response_text = f"Agent received: {user_message} (API error)"
+                self.add_message("assistant", response_text)
+                return response_text
+            except Exception as e:
+                # Handle any other unexpected errors
+                error_msg = f"Unexpected error: {e}"
+                print(error_msg)
+                response_text = f"Agent received: {user_message} (error occurred)"
                 self.add_message("assistant", response_text)
                 return response_text
         else:
