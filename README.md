@@ -112,7 +112,7 @@ The agent can be configured through:
 - OpenAI Python library
 - python-dotenv
 
-**Note**: The dependencies listed in `requirements.txt` are optional for development/testing purposes. The agent can run without dependencies, but requires the OpenAI library for full GPT functionality and python-dotenv for `.env` file support.
+**Note**: The dependencies listed in `requirements.txt` enable full agent functionality. Without the OpenAI library, the agent operates in a limited test mode. The python-dotenv package is only needed if using `.env` files for configuration.
 
 ## Agent v0.2 Design Plan (Concise)
 
