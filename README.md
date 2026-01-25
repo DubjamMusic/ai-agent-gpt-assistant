@@ -30,7 +30,7 @@ The following enhancements are planned for future releases:
 
 The current implementation (v0.1) has the following limitations:
 
-- **No Tool Calling**: The agent cannot execute functions or call external tools yet
+- **No Tool Calling (Function Calling)**: The agent cannot execute functions or call external tools yet
 - **Limited Context Window Management**: No automatic truncation or summarization of long conversations
 - **Single Agent Only**: No support for multi-agent systems or agent coordination
 - **Basic Error Handling**: Simple error messages without retry or fallback mechanisms
@@ -112,7 +112,7 @@ The agent can be configured through:
 - OpenAI Python library
 - python-dotenv
 
-**Note**: The dependencies listed in `requirements.txt` are optional. The agent can function in a limited capacity without the OpenAI library (for testing/development), and python-dotenv is only needed for `.env` file support.
+**Note**: The dependencies listed in `requirements.txt` are optional for development/testing purposes. The agent can run without dependencies, but requires the OpenAI library for full GPT functionality and python-dotenv for `.env` file support.
 
 ## Agent v0.2 Design Plan (Concise)
 
@@ -124,10 +124,10 @@ The v0.2 release will focus on modularity and extensibility:
 - **Event System**: Publish-subscribe pattern for agent lifecycle events
 
 ### Key Components
-1. **Tool Registry**: Centralized registry for function calling and external tool integration
-2. **Memory Manager**: Pluggable memory backends (in-memory, file-based, vector stores)
-3. **Prompt Template Engine**: Reusable prompt templates with variable substitution
-4. **Response Parser**: Structured output parsing for function calls and JSON responses
+- **Tool Registry**: Centralized registry for function calling and external tool integration
+- **Memory Manager**: Pluggable memory backends (in-memory, file-based, vector stores)
+- **Prompt Template Engine**: Reusable prompt templates with variable substitution
+- **Response Parser**: Structured output parsing for function calls and JSON responses
 
 ### API Changes
 - Introduce async variants of core methods (`async_chat`, `async_stream`)
