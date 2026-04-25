@@ -1,3 +1,13 @@
-# GPT Agent Dependencies
+# GPT Agent v0.2 Dependencies
+
+# Core dependencies
 openai>=1.0.0
 python-dotenv>=1.0.0
+
+# Async support
+aiohttp>=3.8.0
+
+# Optional: For enhanced functionality
+# requests>=2.28.0  # For web requests
+# pydantic>=2.0.0   # For data validation
+# sqlalchemy>=2.0.0 # For database tools
