@@ -1,0 +1,18 @@
+{
+  "figureId": "volt-broker",
+  "codename": "VOLT-BROKER-26",
+  "waveId": "2026-09-26-k-axle",
+  "repo": "DubjamMusic/ai-agent-gpt-assistant",
+  "role": "Bind the Python assistant watt as a scored budget card.",
+  "knowledge": [
+    "agent_v2.py and tools.py are the live surface, not this wave's rewrite",
+    "Watt is a density card, not an OpenAI client swap",
+    "Secret rotation stays on a separate issue"
+  ],
+  "sample": {"N": 8.2, "V": 7.8, "S": 8.6, "D": 8.1},
+  "weights": {"N": 0.30, "V": 0.20, "S": 0.20, "D": 0.30},
+  "expectedDensity": 8.166,
+  "bannedTokens": ["planner", "executor", "monitor", "data_agent"],
+  "predecessorNotThisWave": "loopsmith",
+  "mergePolicy": "pr-only"
+}
