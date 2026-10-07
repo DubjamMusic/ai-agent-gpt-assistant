@@ -35,7 +35,7 @@ def bind_prompt(task: str, tools: list[str]) -> dict:
 
 def _self_check() -> None:
     mark = bind_prompt("score the weekly density note", ["score_density"])
-    expected = "keel:token-alchemist:1:28"
+    expected = "keel:token-alchemist:1:29"
     if mark["keel"] != expected:
         raise SystemExit(f"FAIL {mark['keel']} != {expected}")
     try:
