@@ -1,0 +1,10 @@
+import fs from 'fs';
+const card = JSON.parse(fs.readFileSync('./prompt.json','utf8'));
+const banned = ['planner','executor','monitor','data_agent'];
+const text = JSON.stringify(card).toLowerCase();
+const hasBanned = banned.some(b => text.includes(b));
+const hasSecret = /sk-|api_key|openai_key|\.env/i.test(text);
+const len = card.prompt.length;
+const pass = card.figure === 'prompt-smith' && Math.abs(len - card.expectedLength) < 5 && !hasBanned && !hasSecret && card.prOnly;
+console.log(JSON.stringify({ pass, length: len, banned: hasBanned, secret: hasSecret }));
+if (!pass) process.exit(1);
