@@ -1,0 +1,7 @@
+{
+  "figure": "prompt-smith",
+  "wave": "2026-11-03-q-ember",
+  "prompt": "Summarize the last three tool calls and propose one next safe action. Do not invent keys or credentials.",
+  "expectedLength": 112,
+  "prOnly": true
+}
